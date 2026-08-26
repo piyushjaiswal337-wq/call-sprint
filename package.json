@@ -1,0 +1,9 @@
+{
+  "name": "call-sprint",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Call Sprint - cold calling lead management PWA",
+  "dependencies": {
+    "firebase-admin": "^12.1.0"
+  }
+}
