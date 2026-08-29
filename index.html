@@ -1242,5 +1242,56 @@ function closeRechargeModal() {
 }
 
 </script>
+<div id="dialPadOverlay" style="display:none;position:fixed;inset:0;background:rgba(10,18,38,0.72);z-index:10001;align-items:center;justify-content:center;padding:22px;">
+  <div style="background:#fff;border-radius:14px;padding:20px;max-width:320px;width:100%;box-sizing:border-box;position:relative;">
+    <button onclick="closeDialPad()" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;color:#6b7280;cursor:pointer;">&times;</button>
+    <h2 style="margin:0 0 14px;font-size:18px;color:#1e3a5f;text-align:center;">Number Dial Karo</h2>
+    <input id="dialInput" type="tel" readonly style="width:100%;padding:14px;font-size:22px;text-align:center;border:1px solid #e7e1d6;border-radius:9px;margin-bottom:14px;letter-spacing:1px;" placeholder="Number">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+      <button onclick="dialDigit('1')" class="dialKey">1</button>
+      <button onclick="dialDigit('2')" class="dialKey">2</button>
+      <button onclick="dialDigit('3')" class="dialKey">3</button>
+      <button onclick="dialDigit('4')" class="dialKey">4</button>
+      <button onclick="dialDigit('5')" class="dialKey">5</button>
+      <button onclick="dialDigit('6')" class="dialKey">6</button>
+      <button onclick="dialDigit('7')" class="dialKey">7</button>
+      <button onclick="dialDigit('8')" class="dialKey">8</button>
+      <button onclick="dialDigit('9')" class="dialKey">9</button>
+      <button onclick="dialBackspace()" class="dialKey">⌫</button>
+      <button onclick="dialDigit('0')" class="dialKey">0</button>
+      <button onclick="dialDigit('+')" class="dialKey">+</button>
+    </div>
+    <button onclick="makeCall()" style="width:100%;padding:13px;background:#2f9e44;color:#fff;border:none;border-radius:9px;font-weight:700;font-size:16px;cursor:pointer;">📞 Call Karo</button>
+  </div>
+</div>
+
+<style>
+.dialKey{padding:14px 0;font-size:19px;font-weight:600;border:1px solid #e7e1d6;border-radius:9px;background:#fff;color:#16233a;cursor:pointer;}
+</style>
+
+<script>
+function openDialPad(){ document.getElementById('dialInput').value=''; document.getElementById('dialPadOverlay').style.display='flex'; }
+function closeDialPad(){ document.getElementById('dialPadOverlay').style.display='none'; }
+function dialDigit(d){ document.getElementById('dialInput').value += d; }
+function dialBackspace(){ const el=document.getElementById('dialInput'); el.value = el.value.slice(0,-1); }
+function makeCall(){
+  const num = document.getElementById('dialInput').value.trim();
+  if(!num) return;
+  if(window.ReactNativeWebView){ window.ReactNativeWebView.postMessage('CALL:' + num); }
+  else { window.location.href = 'tel:' + num; }
+  closeDialPad();
+}
+document.addEventListener('DOMContentLoaded', function(){
+  const rBtn = document.getElementById('rechargeBtn');
+  if(rBtn){
+    const dBtn = document.createElement('button');
+    dBtn.id = 'dialPadBtn';
+    dBtn.onclick = openDialPad;
+    dBtn.style.cssText = 'position:relative;margin-top:10px;margin-left:8px;background:#1e3a5f;color:#fff;border:1.5px solid #1e3a5f;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12.5px;letter-spacing:.02em;cursor:pointer;';
+    dBtn.textContent = '📞 Dial Pad';
+    rBtn.insertAdjacentElement('afterend', dBtn);
+  }
+});
+</script>
 </body>
-</html>
+                                    </html>
