@@ -244,6 +244,7 @@
   }
   .card.done{opacity:.6;}
   .card.status-busy{border-color:#f3b8b8;background:#fff8f8;}
+    .card.followup-due{border-color:#ffb300;background:#fff9e6;box-shadow:0 0 0 2px #ffe28a inset;}
   .card.status-noanswer{border-color:#f0dc8c;background:#fffdf3;}
   .card.score-hot{border-left:4px solid var(--red);}
   .card.score-warm{border-left:4px solid var(--amber);}
@@ -865,7 +866,10 @@ function extractNumbers(lines) {
       repeats: old ? (old.repeats || 0) + data.count : data.count,
       status: old ? old.status : 'pending',
       tries: old ? (old.tries || 0) : 0,
-      score: old ? (old.score || null) : null
+      score: old ? (old.score || null) : null,
+        note: (old && old.note) || "",
+        followUpDate: (old && old.followUpDate) || null,
+        history: (old && old.history) || []
     });
   });
 
@@ -979,6 +983,26 @@ scoreSheetOverlay.addEventListener('click', (e) => {
 let activeSheetId = null;
 const sheetOverlay = document.getElementById('sheetOverlay');
 
+function openNoteSheet(id) {
+  const c = contacts.find(x => x.id === id);
+  const note = prompt('Note likho:', (c && c.note) || '');
+  if (note !== null) {
+    contacts = contacts.map(x => x.id === id ? { ...x, note } : x);
+    saveContacts();
+    render();
+  }
+}
+
+function openFollowUpSheet(id) {
+  const c = contacts.find(x => x.id === id);
+  const d = prompt('Follow-up date (YYYY-MM-DD):', (c && c.followUpDate) || '');
+  if (d !== null) {
+    contacts = contacts.map(x => x.id === id ? { ...x, followUpDate: d.trim() || null } : x);
+    saveContacts();
+    render();
+  }
+}
+
 function openSheet(id) {
   activeSheetId = id;
   const c = contacts.find(c => c.id === id);
@@ -1084,7 +1108,8 @@ function render() {
     const sc = c.score || 'none';
     const cardCls = [
       st === 'picked' ? 'done' : (st === 'busy' ? 'status-busy' : (st === 'noanswer' ? 'status-noanswer' : '')),
-      sc !== 'none' ? `score-${sc}` : ''
+      sc !== 'none' ? `score-${sc}` : '',
+      (c.followUpDate && new Date(c.followUpDate + 'T23:59:59') <= new Date(new Date().setDate(new Date().getDate() + 1))) ? 'followup-due' : ''
     ].filter(Boolean).join(' ');
     const badgeIcon = st === 'picked' ? '✓' : (st === 'busy' || st === 'noanswer' ? '!' : (contacts.indexOf(c)+1));
     const triesTag = c.tries > 0 && st !== 'picked' ? `<span class="retry-badge">${c.tries}x try</span>` : '';
@@ -1103,6 +1128,8 @@ function render() {
         <a class="btn btn-wa" href="https://wa.me/91${c.phone}" target="_blank" title="WhatsApp">💬</a>
         <button class="status-select score-select ${scoreMeta[sc].cls}" onclick="openScoreSheet('${c.id}')" title="Lead priority">${scoreMeta[sc].icon}</button>
         <button class="status-select ${statusMeta[st].cls}" onclick="openSheet('${c.id}')" title="Call ka result">${statusMeta[st].icon}</button>
+        <button class="btn btn-note" onclick="openNoteSheet('${c.id}')" title="Note">📝</button>
+        <button class="btn btn-followup" onclick="openFollowUpSheet('${c.id}')" title="Follow-up">📅</button>
       </div>
     </div>
   `;
