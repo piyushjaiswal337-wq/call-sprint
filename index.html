@@ -941,6 +941,8 @@ function setStatus(id, status) {
     c.tries = (c.tries || 0) + 1;
   }
   c.status = status;
+  c.history = c.history || [];
+  c.history.push({ date: new Date().toISOString(), status: status });
   saveContacts();
   render();
 }
@@ -982,6 +984,25 @@ scoreSheetOverlay.addEventListener('click', (e) => {
 
 let activeSheetId = null;
 const sheetOverlay = document.getElementById('sheetOverlay');
+
+function openHistorySheet(id) {
+  const c = contacts.find(x => x.id === id);
+  const h = (c && c.history) || [];
+  if (h.length === 0) {
+    alert("Abhi tak koi call history nahi hai is number ke liye.");
+    return;
+  }
+  const lines = h.slice().reverse().map(entry => {
+    const d = new Date(entry.date);
+    const dateStr = d.toLocaleDateString("en-IN");
+    const timeStr = d.toLocaleTimeString("en-IN");
+    return dateStr + " " + timeStr + " - " + entry.status;
+  });
+  alert("Call History:
+
+" + lines.join("
+"));
+}
 
 function openNoteSheet(id) {
   const c = contacts.find(x => x.id === id);
@@ -1130,6 +1151,7 @@ function render() {
         <button class="status-select ${statusMeta[st].cls}" onclick="openSheet('${c.id}')" title="Call ka result">${statusMeta[st].icon}</button>
         <button class="btn btn-note" onclick="openNoteSheet('${c.id}')" title="Note">📝</button>
         <button class="btn btn-followup" onclick="openFollowUpSheet('${c.id}')" title="Follow-up">📅</button>
+        <button class="btn btn-history" onclick="openHistorySheet('${c.id}')" title="Call History">📜</button>
       </div>
     </div>
   `;
