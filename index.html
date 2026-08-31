@@ -1145,7 +1145,7 @@ function render() {
         }
       </div>
       <div class="actions">
-        <a class="btn btn-call" href="tel:${c.phone}" title="Call">📞</a>
+        <a class="btn btn-call" href="tel:${c.phone}" onclick="setStatus('${c.id}','picked')" title="Call">📞</a>
         <a class="btn btn-wa" href="https://wa.me/91${c.phone}" target="_blank" title="WhatsApp">💬</a>
         <button class="status-select score-select ${scoreMeta[sc].cls}" onclick="openScoreSheet('${c.id}')" title="Lead priority">${scoreMeta[sc].icon}</button>
         <button class="status-select ${statusMeta[st].cls}" onclick="openSheet('${c.id}')" title="Call ka result">${statusMeta[st].icon}</button>
@@ -1326,6 +1326,9 @@ function dialBackspace(){ const el=document.getElementById('dialInput'); el.valu
 function makeCall(){
   const num = document.getElementById('dialInput').value.trim();
   if(!num) return;
+  const digitsOnly = num.replace(/\D/g, '').slice(-10);
+  const match = contacts.find(c => c.phone.replace(/\D/g, '').slice(-10) === digitsOnly);
+  if (match) setStatus(match.id, 'picked');
   if(window.ReactNativeWebView){ window.ReactNativeWebView.postMessage('CALL:' + num); }
   else { window.location.href = 'tel:' + num; }
   closeDialPad();
