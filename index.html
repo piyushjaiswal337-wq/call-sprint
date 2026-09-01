@@ -1223,7 +1223,7 @@ render();
     }
 
     localStorage.setItem(GATE_KEY, JSON.stringify({ name, phone, ts: Date.now() }));
-    checkPremiumStatus(phone);
+    try { if (typeof checkPremiumStatus === "function") checkPremiumStatus(phone); } catch(e) { console.error("checkPremiumStatus error:", e); }
 
     overlay.style.display = 'none';
     document.getElementById('helpOverlay').style.display = 'flex';
