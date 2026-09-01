@@ -1003,10 +1003,7 @@ function openHistorySheet(id) {
     const timeStr = d.toLocaleTimeString("en-IN");
     return dateStr + " " + timeStr + " - " + entry.status;
   });
-  alert("Call History:
-
-" + lines.join("
-"));
+  alert("Call History:\n\n" + lines.join("\n"));
 }
 
 function openNoteSheet(id) {
