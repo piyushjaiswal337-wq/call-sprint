@@ -1147,7 +1147,7 @@ function render() {
         }
       </div>
       <div class="actions">
-        <a class="btn btn-call" href="tel:${c.phone}" onclick="setStatus('${c.id}','picked')" title="Call">📞</a>
+        <button class="btn btn-call" onclick="callContact('${c.id}','${c.phone}')" title="Call">📞</button>
         <a class="btn btn-wa" href="https://wa.me/91${c.phone}" target="_blank" title="WhatsApp">💬</a>
         <button class="status-select score-select ${scoreMeta[sc].cls}" onclick="openScoreSheet('${c.id}')" title="Lead priority">${scoreMeta[sc].icon}</button>
         <button class="status-select ${statusMeta[st].cls}" onclick="openSheet('${c.id}')" title="Call ka result">${statusMeta[st].icon}</button>
@@ -1177,7 +1177,11 @@ document.querySelectorAll('.chip').forEach(chip => {
     render();
   });
 });
-
+function callContact(id, phone){
+  setStatus(id, 'picked');
+  if(window.ReactNativeWebView){ window.ReactNativeWebView.postMessage('CALL:' + phone); }
+  else { window.location.href = 'tel:' + phone; }
+}
 document.getElementById('resetBtn').addEventListener('click', () => {
   contacts = [];
   saveContacts();
